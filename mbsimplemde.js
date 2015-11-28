@@ -6,18 +6,34 @@
  * @description
  * # mbSimpleMde
  */
-angular.module('mb.simplemde')
-.directive('mbSimplemde', function(){
-  return function($scope, element, attributes) {
-    var simplemde = new SimpleMDE({
-      element: element.get(0),
-      hideIcons: ['side-by-side', 'fullscreen'],
-      status: false
-    });
+angular.module('mb.simplemde', []);
 
-    simplemde.codemirror.on('change', function(){
-      element.val(simplemde.value());
-      element.trigger('input');
-    });
+angular.module('mb.simplemde')
+.directive('mbSimplemde', function() {
+  return {
+    restrict: 'A',
+    require: 'ngModel',
+    link: function($scope, element, attributes, ngModel) {
+      var hasBeenSet = false;
+
+      var simplemde = new SimpleMDE({
+        element: element.get(0),
+        renderingConfig: {
+          singleLineBreaks: true
+        }
+      });
+
+      $scope.$watch(attributes.ngModel, function(value) {
+        if (!hasBeenSet && !!value) {
+          simplemde.value(value);
+          hasBeenSet = true;
+        }
+      });
+
+      simplemde.codemirror.on('change', function(){
+        element.val(simplemde.value());
+        element.trigger('input');
+      });
+    }
   };
 });
