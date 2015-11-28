@@ -1,0 +1,26 @@
+{
+  "name": "angular-simplemde",
+  "homepage": "https://github.com/marbysystems/ng-simplemde-markdown-editor",
+  "authors": [
+    "Judd Kirby <j.kirby@jksoftware.com.au>"
+  ],
+  "description": "AngularJS integration for the simplemde plugin",
+  "main": "mbsimplemde.js",
+  "moduleType": [],
+  "keywords": [
+    "angular",
+    "markdown",
+    "simplemde"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "simplemde": "~1.8.1"
+  }
+}
