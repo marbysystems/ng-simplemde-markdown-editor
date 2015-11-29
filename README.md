@@ -1,1 +1,1 @@
-# ng-simplemde-markdown-editor
+# Angular SimpleMDE
