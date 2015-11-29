@@ -14,25 +14,50 @@ angular.module('mb.simplemde')
     restrict: 'A',
     require: 'ngModel',
     link: function($scope, element, attributes, ngModel) {
-      var hasBeenSet = false;
+      var inputEvents = ['+input', 'paste'];
+      var options = $scope.$eval(attributes.mbSimplemde);
+      options.element = element.get(0);
+      var simplemde = new SimpleMDE(options);
 
-      var simplemde = new SimpleMDE({
-        element: element.get(0),
-        renderingConfig: {
-          singleLineBreaks: true
-        }
-      });
+      var maxLength = parseInt(attributes.mbSimplemdeMaxLength, 10);
+      if (!!maxLength) {
+        element.siblings('.editor-statusbar').append('<span class="maxlength"></span>');
+      }
+      var maxLengthElement = element.siblings('.editor-statusbar').find('.maxlength');
 
       $scope.$watch(attributes.ngModel, function(value) {
-        if (!hasBeenSet && !!value) {
+        if (simplemde.value() !== value) {
           simplemde.value(value);
-          hasBeenSet = true;
         }
       });
 
-      simplemde.codemirror.on('change', function(){
-        element.val(simplemde.value());
-        element.trigger('input');
+      simplemde.codemirror.on('change', function(instance, changeObj) {
+        // Check if we're now at max length and set a warning.
+        if (!!maxLength) {
+          if (simplemde.value().length === maxLength) {
+            maxLengthElement.text('Maximum characters reached');
+          } else {
+            maxLengthElement.text('');
+          }
+        }
+
+        // Update the view value, so that all standard ngModel
+        // parsers/validators get triggered
+        ngModel.$setViewValue(simplemde.value());
+      });
+
+      simplemde.codemirror.on('beforeChange', function(instance, changeObj) {
+        // If we have a maxlength set, make sure that this input won't exceed it
+        // Currently only handling character '+input' and 'paste' events
+        if (!!maxLength && _.include(inputEvents, changeObj.origin)) {
+          var newTextLength = _.reduce(changeObj.text, function(memo, text) {
+            return memo + text.length;
+          }, changeObj.text.length - 1);
+          if (simplemde.value().length + newTextLength > maxLength) {
+            maxLengthElement.text('This would exceed your character limit');
+            changeObj.cancel();
+          }
+        }
       });
     }
   };
