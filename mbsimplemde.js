@@ -43,7 +43,12 @@ angular.module('mb.simplemde')
 
         // Update the view value, so that all standard ngModel
         // parsers/validators get triggered
-        ngModel.$setViewValue(simplemde.value());
+        //
+        // We have to apply this explicitly as the
+        // $setViewValue doesn't always force a digest
+        $scope.$apply(function() {
+          ngModel.$setViewValue(simplemde.value());
+        });
       });
 
       simplemde.codemirror.on('beforeChange', function(instance, changeObj) {
