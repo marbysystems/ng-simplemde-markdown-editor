@@ -15,7 +15,7 @@ angular.module('mb.simplemde')
     require: 'ngModel',
     link: function($scope, element, attributes, ngModel) {
       var inputEvents = ['+input', 'paste'];
-      var options = $scope.$eval(attributes.mbSimplemde);
+      var options = $scope.$eval(attributes.mbSimplemde) || {};
       options.element = element.get(0);
       var simplemde = new SimpleMDE(options);
 
